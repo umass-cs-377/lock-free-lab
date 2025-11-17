@@ -8,8 +8,9 @@ int NUM_THREADS = 8;
 int NUM_ITERS   = 1000000;
 
 pthread_mutex_t lock;
-int counter_mutex = 0;
-int counter_cas   = 0;
+int counter_mutex       = 0;
+atomic_int counter_cas  = 0;
+// int counter_cas   = 0;
 
 double now_sec() {
     struct timespec t;
