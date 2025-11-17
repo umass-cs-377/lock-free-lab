@@ -4,8 +4,8 @@
 #include <stdatomic.h>
 #include <time.h>
 
-int NUM_THREADS = 8;
-int NUM_ITERS   = 1000000;
+int NUM_THREADS = 2;
+int NUM_ITERS   = 1000;
 
 pthread_mutex_t lock;
 int counter_mutex       = 0;

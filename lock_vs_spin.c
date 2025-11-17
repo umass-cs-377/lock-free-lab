@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 
-int NUM_THREADS = 4;
+int NUM_THREADS = 2;
 int NUM_ITERS   = 1000;
 int ARRAY_SIZE  = 10000;
 
