@@ -26,7 +26,7 @@ cd lock-free-lab
 
 This repo includes a Makefile that allows you to locally compile and run all the sample code listed in this tutorial. You can compile them by running `make`. Feel free to modify the source files yourself. After making changes, you can run `make` again to build new binaries from your modified files. You can also use `make clean` to remove all the built files; this command is usually used when something went wrong during the compilation, so that you can start fresh.
 
-## Part 1: Overview
+# Part 1: Overview
 
 A **lock (mutex)** is a synchronization mechanism that ensures that only one thread can access a shared resource at a time. When a thread acquires a lock, any other thread attempting to access the same resource must wait until the lock is released. This guarantees mutual exclusion and prevents data races. Locks are typically implemented by the operating system using kernel support. When contention occurs, the OS can put waiting threads to sleep and wake them later, which prevents unnecessary CPU use.
 
@@ -36,7 +36,7 @@ In contrast, **lock-free concurrency** avoids using traditional locks. Instead, 
 
 Today, we want you to explore both approaches in practice and observe which one performs better under different conditions. By experimenting with various scenarios, you will see how locks and lock-free mechanisms work.
 
-## Part 2: Mutex - recap (5 Points)
+# Part 2: Mutex - recap
 
 A **mutex** (short for *mutual exclusion*) is a synchronization primitive used to protect shared data from concurrent access. It ensures that only one thread can execute a particular section of code at a time. When a thread calls `pthread_mutex_lock()`, it attempts to acquire ownership of the mutex.
 
@@ -64,7 +64,7 @@ In this implementation, all threads share the same global `pthread_mutex_t lock`
 
 While this approach prevents data races, it also introduces serialization: only one thread can be inside the critical section at once. 
 
-## Part 3: Lock Free with CAS (20 Points)
+# Part 3: Lock Free with CAS
 
 A **compare-and-swap (CAS)** operation is the foundation of many lock-free algorithms. It is an *atomic* instruction provided by modern processors that compares the value stored in a memory location with an expected value and, only if they match, replaces it with a new one.
 
@@ -128,16 +128,16 @@ Record the execution time for both the mutex and CAS versions under different nu
 
 Answer the following question on Gradescope:
 
-- How performance changes as the number of threads increases? What about the iterations?
-- Which one is faster? mutex or CAS?  Do you think why one of them performs better in this experiment?
+- How does the execution time of each version (mutex and CAS) change as the number of threads increases?
+- Which version is faster under low thread counts? Under high thread counts? Explain the results by discussing factors such as contention, retries, and blocking.
 
 ## Part 4: CAS as spin-lock (20 Points)
 
-In our previous experiment, CAS easily outperformed the mutex version. That’s because the task was very simple; each thread only needed to update one shared variable. A single atomic instruction was enough to protect the operation, and no additional synchronization was required. 
+In our previous experiment, the task was very simple; each thread only needed to update one shared variable. A single atomic instruction was enough to protect the operation, and no additional synchronization was required. 
 
 However, most real-world systems have larger critical sections that involve multiple pieces of shared data. For example, a banking system might need to withdraw from one account and deposit into another at the same time. These two updates must happen together. If one succeeds and the other fails, the system becomes inconsistent. In such cases, a single CAS is no longer enough. 
 
-To handle this, we can use CAS to implement a simple spin lock, a lightweight lock that uses CAS to control access to a critical section. This spin lock can then protect multiple updates atomically, just like a mutex, but without the overhead of kernel blocking. 
+One way to handle this is to use CAS to implement a simple spin lock, a lightweight lock that uses CAS to control access to a critical section. This spin lock can then protect multiple updates atomically, just like a mutex, but without the overhead of kernel blocking. 
 
 Below is the portion of our program that implements the spinlock version of CAS to protect access to the shared array:
 
@@ -162,7 +162,9 @@ void *with_cas(void *arg) {
 
 In the code above, we use CAS to implement a simple **lock-free spinlock** that protects access to a shared array. This implementation explicitly checks whether the `spin_flag` is unlocked (`0`) and sets it to locked (`1`) using CAS. Only one thread can succeed at this operation at a time.
 
-### Let’s begin the experiment
+- Do you think using CAS as a spinlock is a good idea?
+
+### Let’s begin the experiment!
 
 In this part, you will explore how the number of threads, the number of iterations, and the size of the array affect the performance of both synchronization methods. The goal is to observe how contention, workload size, and available CPU resources influence whether the **mutex** or **CAS** approach performs better.
 
@@ -174,9 +176,9 @@ You can run the program using command-line arguments:
 ./lock_vs_spin <num_threads> <num_iters> <array_size>
 ```
 
-- Number of threads: represents the number of worker thread that will do the work.
-- Iterations per thread: represents the number of time each thread will enter the critical section
-- Array size: represents the amount of work inside the critical section
+- Number of threads: represents the number of worker threads that will do the work.
+- Iterations per thread: represents the number of times each thread will enter the critical section.
+- Array size: represents the amount of work inside the critical section.
 
 ### Step 2: How to measure the performance
 
@@ -196,7 +198,7 @@ Change one parameter at a time (for example, keep the array size fixed and vary 
 Now answer the following questions:
 
 1. How does increasing the number of threads affect performance for each method?
-2. How does increasing the number of iterations (the number of times each thread enter critical section) affect performance for each method?
+2. How does increasing the number of iterations (the number of times each thread enters the critical section) affect performance for each method?
 3. How does increasing the array size (amount of work per critical section) influence the results?
 4. What is your conclusion from the experiment?  
     1. When will mutex be faster? 
@@ -207,9 +209,15 @@ Now answer the following questions:
 
 https://lumian2015.github.io/lockFreeProgramming/lock-free-vs-spin-lock.html
 
+ ****https://www.youtube.com/watch?v=c1gO9aB9nbs
+
+http://www.youtube.com/watch?v=ZQFzMfHIxng
+
+https://lumian2015.github.io/lockFreeProgramming/aba-problem.html - problem with lock-free
+
 ## Credits:
 
-First, I wanted to thank our **anonymous classmate** for raising this interesting question about lock vs. lock-free concurrency on Piazza, which led to this lab. 
+First, I wanted to thank our **anonymous classmate** for raising this interesting question about lock vs. lock-free concurrency on Piazza, which led to this lab. (Please let us know if you want us to remove the anonymity. We would love to credit you appropriately.)
 
 Second, this is a new lab, so any feedback is very welcome!  You can use our brownie point form to share it.
 
