@@ -35,8 +35,11 @@ void *with_mutex(void *arg) {
 
 void *with_spin(void *arg) {
     for (int i = 0; i < NUM_ITERS; i++) {
-        while (atomic_exchange(&spin_flag, 1) == 1)
-            ; // busy wait
+        // while (atomic_exchange(&spin_flag, 1) == 1)
+        //     ; // busy wait
+        while (!atomic_compare_exchange_weak(&spin_flag, &expected, 1)) {
+            expected = 0; // reset expectation before retrying
+        }
         do_work(shared_array);
         atomic_store(&spin_flag, 0);
     }
