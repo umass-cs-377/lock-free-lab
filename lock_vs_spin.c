@@ -37,6 +37,7 @@ void *with_spin(void *arg) {
     for (int i = 0; i < NUM_ITERS; i++) {
         // while (atomic_exchange(&spin_flag, 1) == 1)
         //     ; // busy wait
+        int expected = 0;
         while (!atomic_compare_exchange_weak(&spin_flag, &expected, 1)) {
             expected = 0; // reset expectation before retrying
         }
