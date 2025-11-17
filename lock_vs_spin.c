@@ -37,12 +37,13 @@ void *with_spin(void *arg) {
     for (int i = 0; i < NUM_ITERS; i++) {
         // while (atomic_exchange(&spin_flag, 1) == 1)
         //     ; // busy wait
-        int expected = 0;
+        int expected = 0;  // what we expect: unlocked
+        // Try to acquire the lock
         while (!atomic_compare_exchange_weak(&spin_flag, &expected, 1)) {
             expected = 0; // reset expectation before retrying
         }
-        do_work(shared_array);
-        atomic_store(&spin_flag, 0);
+        do_work(shared_array); // critical section
+        atomic_store(&spin_flag, 0);  // release
     }
     return NULL;
 }
